@@ -1,7 +1,8 @@
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from calcular_calorias import calcular_calorias
+from calculadora_calorias import calcular_calorias
+
 from generar_informe_pdf import generar_informe_simple
 
 app = FastAPI(
