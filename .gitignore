@@ -1,0 +1,14 @@
+# Entorno virtual
+venv/
+
+# Archivos de Python compilados
+__pycache__/
+*.pyc
+
+# Informes PDF generados
+informes/
+
+# Archivos auxiliares de Windows o editores
+*.bat
+.DS_Store
+Thumbs.db
