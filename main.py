@@ -1,37 +1,45 @@
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
-from pydantic import BaseModel, Field
-from calculadora_calorias import calcular_calorias
-from generar_informe_pdf import generar_pdf, generar_informe_simple
-import uuid
+from pydantic import BaseModel
+from calcular_calorias import calcular_calorias
+from generar_informe_pdf import generar_informe_simple
 
 app = FastAPI(
     title="NutriCoach Pro – API",
-    description="API de cálculo de calorías, generación de informes PDF y asistencia nutricional.",
+    description="API para cálculo de calorías y generación de informes personalizados",
     version="1.0.0"
 )
 
-# MODELOS DE ENTRADA
+# ✅ Modelo base
 class DatosUsuario(BaseModel):
-    sexo: str = Field(..., pattern="^(h|m)$", example="h")
-    edad: int = Field(..., ge=13, le=99, example=31)
-    peso: float = Field(..., gt=30, lt=250, example=67.5)
-    altura: float = Field(..., gt=100, lt=250, example=165)
-    nivel_actividad: int = Field(..., ge=1, le=5, example=3)
-    objetivo: str = Field(..., pattern="^(definir|mantener|volumen)$", example="mantener")
+    sexo: str
+    edad: int
+    peso: float
+    altura: float
+    nivel_actividad: int
+    objetivo: str
 
-class DatosInformeCalculo(DatosUsuario):
-    nombre: str = Field(..., example="Yefry")
-
-# ENDPOINTS
+# ✅ Endpoint /calcular
 @app.post("/calcular", tags=["Cálculo"])
 def calcular_endpoint(datos: DatosUsuario):
-    resultado = calcular_calorias(**datos.dict())
+    resultado = calcular_calorias(
+        sexo=datos.sexo,
+        edad=datos.edad,
+        peso=datos.peso,
+        altura=datos.altura,
+        nivel_actividad=datos.nivel_actividad,
+        objetivo=datos.objetivo
+    )
     return {
-        **datos.dict(),
+        "nombre": getattr(datos, "nombre", "usuario"),
         **resultado
     }
 
+# ✅ Modelo extendido para informe
+class DatosInformeCalculo(DatosUsuario):
+    nombre: str
+
+# ✅ Endpoint /informe
 @app.post("/informe", tags=["Informe"])
 def generar_pdf_calculo(datos: DatosInformeCalculo):
     resultado = calcular_calorias(
