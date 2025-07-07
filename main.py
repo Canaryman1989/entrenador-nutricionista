@@ -1,18 +1,20 @@
 from fastapi import FastAPI
-from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from calculadora_calorias import calcular_calorias
-
+from fastapi.responses import StreamingResponse
+from calcular_calorias import calcular_calorias
 from informes_pdf import generar_informe_simple
-
 
 app = FastAPI(
     title="NutriCoach Pro – API",
     description="API para cálculo de calorías y generación de informes personalizados",
-    version="1.0.0"
+    version="1.0.0",
+    openapi_tags=[
+        {"name": "Cálculo", "description": "Cálculo de TMB y calorías"},
+        {"name": "Informe", "description": "Generar PDF con el informe nutricional"},
+    ],
 )
 
-# ✅ Modelo base
+
 class DatosUsuario(BaseModel):
     sexo: str
     edad: int
@@ -21,7 +23,11 @@ class DatosUsuario(BaseModel):
     nivel_actividad: int
     objetivo: str
 
-# ✅ Endpoint /calcular
+
+class DatosInformeCalculo(DatosUsuario):
+    nombre: str
+
+
 @app.post("/calcular", tags=["Cálculo"])
 def calcular_endpoint(datos: DatosUsuario):
     resultado = calcular_calorias(
@@ -32,16 +38,9 @@ def calcular_endpoint(datos: DatosUsuario):
         nivel_actividad=datos.nivel_actividad,
         objetivo=datos.objetivo
     )
-    return {
-        "nombre": getattr(datos, "nombre", "usuario"),
-        **resultado
-    }
+    return resultado
 
-# ✅ Modelo extendido para informe
-class DatosInformeCalculo(DatosUsuario):
-    nombre: str
 
-# ✅ Endpoint /informe
 @app.post("/informe", tags=["Informe"])
 def generar_pdf_calculo(datos: DatosInformeCalculo):
     resultado = calcular_calorias(
