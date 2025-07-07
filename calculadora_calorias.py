@@ -38,7 +38,9 @@ def ajustar_calorias(tdee: float, objetivo: str) -> float:
     else:
         raise ValueError("Objetivo debe ser 'definir', 'mantener' o 'volumen'")
 
-def calcular_calorias(sexo: str, edad: int, peso: float, altura: float, nivel_actividad: int, objetivo: str) -> dict:
+def calcular_calorias(sexo: str, edad: int, peso: float, altura: float, nivel_actividad: int, objetivo: str, **kwargs):
+    # tu lógica actual permanece igual
+
     """
     Calcula TMB, TDEE y calorías objetivo a partir de los datos del usuario.
     """
