@@ -3,7 +3,8 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from calculadora_calorias import calcular_calorias
 
-from generar_informe_pdf import generar_informe_simple
+from informes_pdf import generar_informe_simple
+
 
 app = FastAPI(
     title="NutriCoach Pro – API",
